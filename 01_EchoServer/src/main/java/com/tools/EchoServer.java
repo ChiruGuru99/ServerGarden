@@ -2,27 +2,39 @@ package com.tools;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 
-class EchoServer{
+class EchoServer {
 
-    public static void main(String[] args){
-
-        try(ServerSocket server = new ServerSocket(7)){
-            Socket client = server.accept();
-            while(true){               
-                InputStreamReader i = new InputStreamReader(client.getInputStream());
-                BufferedReader in = new BufferedReader(i);
-                String msg =in.readLine();
-                System.out.println(msg);
-                client.getOutputStream().write(msg.getBytes());
-
+    public static void main(String[] args) {
+        int port = 7;
                 
+        try (ServerSocket server = new ServerSocket(port)) {
+            while (true) {
+                try (Socket client = server.accept();
+                     BufferedReader in = new BufferedReader(
+                         new InputStreamReader(client.getInputStream()));
+                     PrintWriter out = new PrintWriter(
+                         client.getOutputStream(), true)) {
+                    
+                    System.out.println("Client connected: " + 
+                        client.getInetAddress().getHostAddress());
+                    
+                    String message;
+                    while ((message = in.readLine()) != null) {
+                        System.out.println("Received: " + message);
+                        out.println(message);
+                    }
+                    
+                    System.out.println("Client disconnected");
+                    
+                } catch (IOException e) {
+                    System.err.println("Error handling client: " + e.getMessage());
+                }
             }
-        } catch(Exception e){
+        } catch (IOException e) {
+            System.err.println("Server error: " + e.getMessage());
             e.printStackTrace();
         }
     }
-
 }
