@@ -1,0 +1,28 @@
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.iws
+.classpath
+.project
+.settings/
+
+# Credentials — never commit
+.env
+*.pem
+*.key
+*.p12
+*.jks
+
+# Kubernetes — real secret file (use secret.example.yml as template)
+k8s/secret.yml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Spring
+application-local.yml
