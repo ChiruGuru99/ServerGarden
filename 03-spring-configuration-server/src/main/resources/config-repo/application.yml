@@ -1,0 +1,8 @@
+# -------------------------------------------------------------------------
+# Shared defaults — loaded for every application and every profile.
+# Place common settings (timeouts, feature flags, etc.) here.
+# -------------------------------------------------------------------------
+app:
+  shared:
+    connection-timeout-ms: 5000
+    read-timeout-ms: 10000

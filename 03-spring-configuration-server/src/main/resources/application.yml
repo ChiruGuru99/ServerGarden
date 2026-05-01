@@ -1,0 +1,101 @@
+server:
+  port: ${SERVER_PORT:8888}
+  # Allows in-flight requests to complete before shutdown
+  shutdown: graceful
+
+spring:
+  application:
+    name: config-server
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
+  cloud:
+    config:
+      server:
+        git:
+          uri: ${CONFIG_GIT_URI:https://github.com/ChiruGuru99/app-config}
+
+          # Branch / tag to read from (default: main)
+          default-label: ${CONFIG_GIT_BRANCH:main}
+
+          # Subdirectory pattern inside the repo.
+          # '{application}' means each app gets its own folder.
+          # Leave blank for a flat repo (all files at root).
+          search-paths: ${CONFIG_GIT_SEARCH_PATHS:}
+
+          # --- Authentication (for private repositories) ------------------
+          # username: your GitHub handle  |  password: GitHub PAT (classic)
+          username: ${CONFIG_GIT_USERNAME:}
+          password: ${CONFIG_GIT_PASSWORD:}
+
+
+          # Eagerly clone the repo at startup; fails fast if GitHub is down
+          clone-on-start: ${CONFIG_CLONE_ON_START:true}
+
+          # Always pull the latest commit before serving a config request
+          force-pull: ${CONFIG_FORCE_PULL:true}
+
+          # Git network timeout in seconds
+          timeout: ${CONFIG_GIT_TIMEOUT:10}
+
+          # Polling interval for background refresh (seconds)
+          refresh-rate: ${CONFIG_REFRESH_RATE:30}
+
+          # Never set true in production — only for self-signed certs in dev
+          skip-ssl-validation: ${CONFIG_SKIP_SSL:false}
+
+          # Remove stale local branches that no longer exist on remote
+          delete-untracked-branches: true
+
+# -------------------------------------------------------------------------
+# Config server credentials — clients authenticate with these.
+# Override via env vars; never commit real passwords here.
+# -------------------------------------------------------------------------
+config:
+  server:
+    auth:
+      username: ${CONFIG_SERVER_USERNAME:configuser}
+      password: ${CONFIG_SERVER_PASSWORD:changeme}
+
+# -------------------------------------------------------------------------
+# Actuator / observability
+# -------------------------------------------------------------------------
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info,metrics,prometheus,refresh,env,configprops
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true   # /actuator/health/liveness + /readiness
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  info:
+    env:
+      enabled: true
+    git:
+      enabled: true
+
+info:
+  app:
+    name: ${spring.application.name}
+    version: '@project.version@'
+    description: Spring Cloud Config Server — GitHub backend
+
+# -------------------------------------------------------------------------
+# Logging
+# -------------------------------------------------------------------------
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.config: INFO
+    com.servergarden: DEBUG
+    org.springframework.security: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%thread] %-5level %logger{36} - %msg%n"

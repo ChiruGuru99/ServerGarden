@@ -1,0 +1,16 @@
+# -------------------------------------------------------------------------
+# Native profile — uses classpath config files instead of GitHub.
+# Start with: --spring.profiles.active=native
+# Useful for local development without a GitHub repo.
+# -------------------------------------------------------------------------
+spring:
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: classpath:/config-repo/
+
+# No clone-on-start, no git credentials needed in this mode
+logging:
+  level:
+    org.springframework.cloud.config.server.environment.NativeEnvironmentRepository: DEBUG

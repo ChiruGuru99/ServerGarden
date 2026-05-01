@@ -1,0 +1,11 @@
+# -------------------------------------------------------------------------
+# Dev profile — shared across all applications in the dev environment.
+# -------------------------------------------------------------------------
+app:
+  environment: development
+  shared:
+    connection-timeout-ms: 10000   # lenient timeouts for local dev
+
+logging:
+  level:
+    root: DEBUG
